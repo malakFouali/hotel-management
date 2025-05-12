@@ -1,0 +1,200 @@
+import type { Room, Booking, Client, User, HotelStats } from '@/types';
+import { addDays, formatISO, subDays } from 'date-fns';
+
+const today = new Date();
+
+export const mockRooms: Room[] = [
+  {
+    id: 'room-101',
+    name: 'Sunset View Single',
+    roomNumber: '101',
+    type: 'Single',
+    pricePerNight: 120,
+    description: 'A cozy room perfect for solo travelers, featuring a stunning sunset view.',
+    amenities: ['Wi-Fi', 'Air Conditioning', 'TV', 'Mini-fridge', 'Sunset Balcony'],
+    imageUrl: 'https://picsum.photos/seed/room101/600/400',
+    status: 'Available',
+    capacity: 1,
+  },
+  {
+    id: 'room-102',
+    name: 'Garden Double',
+    roomNumber: '102',
+    type: 'Double',
+    pricePerNight: 180,
+    description: 'Spacious double room with a view of our tranquil gardens.',
+    amenities: ['Wi-Fi', 'Air Conditioning', 'TV', 'Coffee Maker', 'Garden Access'],
+    imageUrl: 'https://picsum.photos/seed/room102/600/400',
+    status: 'Occupied',
+    capacity: 2,
+  },
+  {
+    id: 'room-201',
+    name: 'Ocean Breeze Suite',
+    roomNumber: '201',
+    type: 'Suite',
+    pricePerNight: 350,
+    description: 'Luxurious suite with a separate living area and panoramic ocean views.',
+    amenities: ['Wi-Fi', 'Air Conditioning', 'Large TV', 'Jacuzzi Tub', 'Ocean View Balcony', 'Kitchenette'],
+    imageUrl: 'https://picsum.photos/seed/room201/600/400',
+    status: 'Available',
+    capacity: 3,
+  },
+  {
+    id: 'room-202',
+    name: 'City Lights Deluxe',
+    roomNumber: '202',
+    type: 'Deluxe',
+    pricePerNight: 250,
+    description: 'Elegant deluxe room offering breathtaking views of the city skyline at night.',
+    amenities: ['Wi-Fi', 'Air Conditioning', 'Smart TV', 'Rain Shower', 'Work Desk', 'City View'],
+    imageUrl: 'https://picsum.photos/seed/room202/600/400',
+    status: 'Maintenance',
+    capacity: 2,
+  },
+   {
+    id: 'room-301',
+    name: 'Executive King',
+    roomNumber: '301',
+    type: 'Deluxe',
+    pricePerNight: 280,
+    description: 'A premium room with a king-size bed, designed for business travelers.',
+    amenities: ['High-speed Wi-Fi', 'Air Conditioning', '50" TV', 'Ergonomic Workstation', 'Nespresso Machine'],
+    imageUrl: 'https://picsum.photos/seed/room301/600/400',
+    status: 'Available',
+    capacity: 2,
+  },
+  {
+    id: 'room-302',
+    name: 'Family Connect',
+    roomNumber: '302',
+    type: 'Suite',
+    pricePerNight: 420,
+    description: 'Interconnected rooms ideal for families, offering space and privacy.',
+    amenities: ['Wi-Fi', 'Air Conditioning', '2 TVs', 'Kids Play Area', 'Mini-kitchen'],
+    imageUrl: 'https://picsum.photos/seed/room302/600/400',
+    status: 'Occupied',
+    capacity: 4,
+  },
+];
+
+export const mockClients: Client[] = [
+  {
+    id: 'client-001',
+    firstName: 'Alice',
+    lastName: 'Smith',
+    email: 'alice.smith@example.com',
+    phone: '555-0101',
+    createdAt: formatISO(subDays(today, 90)),
+    totalSpent: 720,
+    loyaltyTier: 'Silver',
+  },
+  {
+    id: 'client-002',
+    firstName: 'Bob',
+    lastName: 'Johnson',
+    email: 'bob.johnson@example.com',
+    phone: '555-0102',
+    createdAt: formatISO(subDays(today, 180)),
+    totalSpent: 1500,
+    loyaltyTier: 'Gold',
+  },
+  {
+    id: 'client-003',
+    firstName: 'Carol',
+    lastName: 'Williams',
+    email: 'carol.williams@example.com',
+    phone: '555-0103',
+    createdAt: formatISO(subDays(today, 30)),
+    totalSpent: 350,
+    loyaltyTier: 'Bronze',
+  },
+];
+
+export const mockBookings: Booking[] = [
+  {
+    id: 'booking-001',
+    roomId: 'room-102',
+    clientId: 'client-001',
+    checkInDate: formatISO(subDays(today, 2)),
+    checkOutDate: formatISO(addDays(today, 1)),
+    numberOfGuests: 2,
+    status: 'Confirmed', // Reflects room-102 as Occupied
+    totalAmount: 180 * 3,
+    createdAt: formatISO(subDays(today, 5)),
+  },
+  {
+    id: 'booking-002',
+    roomId: 'room-201',
+    clientId: 'client-002',
+    checkInDate: formatISO(addDays(today, 7)),
+    checkOutDate: formatISO(addDays(today, 10)),
+    numberOfGuests: 1,
+    status: 'Confirmed',
+    totalAmount: 350 * 3,
+    createdAt: formatISO(subDays(today, 1)),
+  },
+  {
+    id: 'booking-003',
+    roomId: 'room-101',
+    clientId: 'client-003',
+    checkInDate: formatISO(addDays(today, 3)),
+    checkOutDate: formatISO(addDays(today, 5)),
+    numberOfGuests: 1,
+    status: 'Pending',
+    totalAmount: 120 * 2,
+    createdAt: formatISO(subDays(today, 0)),
+  },
+   {
+    id: 'booking-004',
+    roomId: 'room-302',
+    clientId: 'client-002',
+    checkInDate: formatISO(subDays(today, 1)),
+    checkOutDate: formatISO(addDays(today, 3)),
+    numberOfGuests: 4,
+    status: 'Confirmed', // Reflects room-302 as Occupied
+    totalAmount: 420 * 4,
+    createdAt: formatISO(subDays(today, 4)),
+  },
+];
+
+export const mockUsers: User[] = [
+  {
+    id: 'user-001',
+    firstName: 'Admin',
+    lastName: 'User',
+    email: 'admin@hotelzenith.com',
+    role: 'Admin',
+    isActive: true,
+    createdAt: formatISO(subDays(today, 365)),
+  },
+  {
+    id: 'user-002',
+    firstName: 'Jane',
+    lastName: 'Manager',
+    email: 'jane.manager@hotelzenith.com',
+    role: 'Manager',
+    isActive: true,
+    createdAt: formatISO(subDays(today, 180)),
+  },
+  {
+    id: 'user-003',
+    firstName: 'John',
+    lastName: 'Reception',
+    email: 'john.reception@hotelzenith.com',
+    role: 'Receptionist',
+    isActive: true,
+    createdAt: formatISO(subDays(today, 60)),
+  },
+];
+
+export const mockHotelStats: HotelStats = {
+  totalRooms: mockRooms.length,
+  occupiedRooms: mockRooms.filter(room => room.status === 'Occupied').length,
+  availableRooms: mockRooms.filter(room => room.status === 'Available').length,
+  occupancyRate: parseFloat(((mockRooms.filter(room => room.status === 'Occupied').length / mockRooms.length) * 100).toFixed(1)),
+  upcomingCheckIns: mockBookings.filter(b => new Date(b.checkInDate) >= today && new Date(b.checkInDate) <= addDays(today, 7) && b.status === 'Confirmed').length,
+  upcomingCheckOuts: mockBookings.filter(b => new Date(b.checkOutDate) >= today && new Date(b.checkOutDate) <= addDays(today, 7) && b.status === 'Confirmed').length,
+  totalRevenueMonth: 25800, // Example value
+  averageRoomRate: 235, // Example value
+};
