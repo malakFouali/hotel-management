@@ -1,3 +1,5 @@
+"use client"; // Add 'use client' because recharts requires client-side rendering
+
 import AuthenticatedLayout from '@/components/layout/AuthenticatedLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Users, Bed, BedDouble, TrendingUp, DollarSign, CalendarDays, BarChart3, PieChartIcon } from 'lucide-react';
@@ -26,14 +28,27 @@ const roomTypeData = mockRooms.reduce((acc, room) => {
   if (existingType) {
     existingType.value += 1;
   } else {
-    acc.push({ name: type, value: 1, fill: `var(--color-${type.toLowerCase()})` });
+    // Assign fill color based on type for the chart
+    let fill = 'hsl(var(--chart-5))'; // Default color
+    if (type === 'Single') fill = 'hsl(var(--chart-1))';
+    else if (type === 'Double') fill = 'hsl(var(--chart-2))';
+    else if (type === 'Suite') fill = 'hsl(var(--chart-3))';
+    else if (type === 'Deluxe') fill = 'hsl(var(--chart-4))';
+    
+    acc.push({ name: type, value: 1, fill: fill });
   }
   return acc;
 }, [] as { name: string; value: number; fill: string }[]);
 
 
 const roomTypeChartConfig = roomTypeData.reduce((acc, item) => {
-    acc[item.name.toLowerCase() as keyof ChartConfig] = { label: item.name, color: item.fill };
+    // Ensure the key matches the fill variable name convention (e.g., --chart-1)
+    const colorKey = item.fill.match(/--chart-\d+/)?.[0].substring(2); // Extracts 'chart-1'
+    if (colorKey) {
+       acc[item.name.toLowerCase() as keyof ChartConfig] = { label: item.name, color: `var(--${colorKey})` };
+    } else {
+         acc[item.name.toLowerCase() as keyof ChartConfig] = { label: item.name, color: item.fill }; // Fallback
+    }
     return acc;
 }, {} as ChartConfig);
 
@@ -75,15 +90,18 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="h-[350px] p-2">
              <ChartContainer config={barChartConfig} className="w-full h-full">
-              <BarChart accessibilityLayer data={occupancyData} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
-                <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={8} />
-                <YAxis tickLine={false} axisLine={false} tickMargin={8} />
-                <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-                <Legend />
-                <Bar dataKey="occupied" fill="var(--color-occupied)" radius={4} />
-                <Bar dataKey="available" fill="var(--color-available)" radius={4} />
-              </BarChart>
+              {/* ResponsiveContainer ensures the chart adapts to the container size */}
+              <ResponsiveContainer width="100%" height="100%">
+                  <BarChart accessibilityLayer data={occupancyData} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
+                    <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                    <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={8} fontSize={12} />
+                    <YAxis tickLine={false} axisLine={false} tickMargin={8} fontSize={12} />
+                    <Tooltip cursor={false} content={<ChartTooltipContent indicator="dot" hideLabel />} />
+                    <Legend verticalAlign="top" height={36} />
+                    <Bar dataKey="occupied" fill="var(--color-occupied)" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="available" fill="var(--color-available)" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+              </ResponsiveContainer>
             </ChartContainer>
           </CardContent>
         </Card>
@@ -94,17 +112,20 @@ export default function DashboardPage() {
             <CardDescription>Breakdown of rooms by their type.</CardDescription>
           </CardHeader>
           <CardContent className="h-[350px] flex items-center justify-center p-2">
-            <ChartContainer config={roomTypeChartConfig} className="w-full h-full aspect-square">
-                <PieChart>
-                   <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-                    <Pie data={roomTypeData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={"80%"} labelLine={false} 
-                        label={({ percent, name }) => `${name}: ${(percent * 100).toFixed(0)}%`}>
-                        {roomTypeData.map((entry) => (
-                            <Cell key={`cell-${entry.name}`} fill={entry.fill} />
-                        ))}
-                    </Pie>
-                    <Legend />
-                </PieChart>
+            <ChartContainer config={roomTypeChartConfig} className="w-full max-w-[300px] aspect-square">
+                 <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                       <Tooltip cursor={false} content={<ChartTooltipContent indicator="dot" hideLabel />} />
+                        <Pie data={roomTypeData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={"80%"} innerRadius={"50%"} labelLine={false}
+                            label={({ percent, name, value }) => `${name}: ${value} (${(percent * 100).toFixed(0)}%)`}
+                            fontSize={12}>
+                            {roomTypeData.map((entry) => (
+                                <Cell key={`cell-${entry.name}`} fill={entry.fill} stroke={entry.fill} />
+                            ))}
+                        </Pie>
+                        <Legend verticalAlign="bottom" height={36}/>
+                    </PieChart>
+                 </ResponsiveContainer>
             </ChartContainer>
           </CardContent>
         </Card>
